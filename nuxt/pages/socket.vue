@@ -85,7 +85,7 @@ export default {
     return {
       message: '',
       messages: [],
-      socket: io('localhost:3000'),   // WebSocketインスタンスを生成する
+      socket: '',
       isLoading: true
     }
   },
@@ -95,20 +95,19 @@ export default {
       return this.messages.slice().reverse()
     },
   },
-  created() {
-    // Vueインスタンスが生成されたら、サーバー側で保持しているメッセージを受信する
-    this.socket.on('new-message', message => {
-      if (!message) {
-        this.messages.push({})
-      }
-      this.messages.push(message)
-    })
-  },
   mounted() {
-    // コンポーネントが要素にマウントされてから1秒間はローディングする
+    // VueインスタンスがDOMにマウントされたらSocketインスタンスを生成する
+    this.socket = io()
+
+    // サーバー側で保持しているメッセージを受信する
+    this.socket.on('new-message', message => {
+      this.messages.push( message || {} )
+    })
+
+    // コンポーネントがマウントされてから1秒間はローディングする
     setTimeout(() => {
       this.isLoading = false
-    }, 10 * 100)
+    }, 1000)
   },
   methods: {
     sendMessage() {
@@ -116,6 +115,7 @@ export default {
       if (!this.message.trim()) {
         return
       }
+
       let now = new Date()  // 現在時刻（世界標準時）を取得
       now.setTime(now.getTime() + 1000 * 60 * 60 * 9) // 日本時間に変換
       now = now.toJSON().split('T')[1].slice(0, 5)  // 時刻のみを取得

@@ -3,6 +3,10 @@ const pkg = require('./package')
 module.exports = {
   mode: 'universal',
 
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000'
+  },
+
   /*
   ** Headers of the page
   */
@@ -56,6 +60,9 @@ module.exports = {
   ** Build configuration
   */
   build: {
+    vendor: [
+      'socket.io-client'
+    ],
     postcss: {
       plugins: {
         'postcss-cssnext': {
@@ -65,6 +72,7 @@ module.exports = {
         }
       }
     },
+    cssSourceMap: false,
     /*
     ** You can extend webpack config here
     */
